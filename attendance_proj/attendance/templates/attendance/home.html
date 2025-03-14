@@ -1,0 +1,103 @@
+<!-- {% load static %} -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <!-- <link rel="stylesheet" href="{% static 'assets/css/style.css' %}"> -->
+    <!-- <link rel="stylesheet" href="../../../static/assets/css/style.css"> -->
+    <style>
+        /* styles.css */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, #1975f5, #63a4ff);
+            font-family: 'inter', sans-serif;
+            color: white;
+            height: 100vh;
+            margin: 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('../../../static/assets/images/alualu.png');
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            /* padding: 10px 0; */
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        h2 {
+            color: white;
+            font-size: 50px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        a {
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        a:hover {
+            background-color: darkred;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome, <!-- {{ user.username }} -->!</h2>
+        <!-- <p>Your unique QR code for attendance:</p> -->
+        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+
+        <!-- <p>Scan this QR code to mark your attendance.</p> -->
+        <a class="button" href="{% url 'logout' %}">Logout</a>
+
+        <!-- <p>Your QR code URL: <a href="{{ qr_code_url }}" target="_blank">{{ qr_code_url }}</a></p> -->
+    </div>
+</body>
+
+</html>
