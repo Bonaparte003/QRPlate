@@ -1,6 +1,6 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,25 +25,27 @@
         }
     </style>
 </head>
+
 <body>
     <div class="wrapper1">
-        <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo" style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
+        <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
+            style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
         <div class="title">Login</div>
-            <!-- <p style="margin-bottom: 30px;">{{ message }}</p> -->
+        <!-- <p style="margin-bottom: 30px;">{{ message }}</p> -->
 
         <form method="POST">
-            <!-- {% csrf_token %} -->
             <div class="row">
                 <label>Email:</label>
                 <input type="email" name="email" required class="email"> <br>
                 <div class="row button"><button type="submit">Send OTP</button></div>
-                
+
             </div>
 
         </form>
         <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
     </div>
 
-    
+
 </body>
+
 </html>

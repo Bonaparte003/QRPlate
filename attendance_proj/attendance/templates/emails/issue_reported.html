@@ -1,6 +1,6 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,24 +12,29 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
         }
+
         .header {
             background-color: #1975f5;
             padding: 20px;
             text-align: center;
         }
+
         .logo {
             margin: 0 auto;
             color: white;
         }
+
         .content {
             padding: 40px 20px;
             text-align: center;
         }
+
         .issue-details {
             background-color: #0b3775;
             color: white;
@@ -40,6 +45,7 @@
             text-align: left;
             margin: 20px 0;
         }
+
         .footer {
             background-color: #2C3E50;
             color: white;
@@ -47,12 +53,14 @@
             text-align: center;
             font-size: 12px;
         }
+
         .message {
             color: #333333;
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 30px;
         }
+
         .note {
             color: #666666;
             font-size: 14px;
@@ -60,6 +68,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -71,13 +80,14 @@
             <h2 style="color: #0e3e81;">New Issue Reported</h2>
             <div class="message">
                 Dear Admin,<br><br>
-                A new issue has been reported by <strong><!-- {{ user.get_full_name }} --></strong> (<a href="mailto:{{ user.email }}"><!-- {{ user.email }} --></a>).
+                A new issue has been reported by <strong>xxxxxx xxxxxxxxx</strong> (<a
+                    href="mailto:{{ user.email }}">xxxxxxxxxxx@xxxxxx.xxxxx</a>).
             </div>
             <div class="issue-details">
-                <p><strong>Issue Title:</strong> <!-- {{ issue.title }} --></p>
-                <p><strong>Description:</strong> <!-- {{ issue.description }} --></p>
-                <p><strong>Priority:</strong> <!-- {{ issue.priority }} --></p>
-                <p><strong>Reported On:</strong> <!-- {{ issue.created_at }} --></p>
+                <p><strong>Issue Title:</strong>xxxxxxx</p>
+                <p><strong>Description:</strong> xxxxxxxxxxxxx</p>
+                <p><strong>Priority:</strong> xxxxxxxxxxxxxxx</p>
+                <p><strong>Reported On:</strong> xxxxxxxxxxxxx</p>
             </div>
             <div class="note">
                 Please address this issue at your earliest convenience.<br>
@@ -90,4 +100,5 @@
         </div>
     </div>
 </body>
+
 </html>

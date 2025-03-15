@@ -1,23 +1,23 @@
-<!-- {% load static %} -->
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGNUP</title>
-    <link rel="stylesheet" href="{% static 'assets/css/signup.css' %}">
-    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
-    <style>
-  body {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGNUP</title>
+  <link rel="stylesheet" href="{% static 'assets/css/signup.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+  <style>
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: linear-gradient(135deg, #1975f5, #63a4ff);
       color: #333;
-  }
-  body::before{
+    }
+
+    body::before {
       content: '';
       position: absolute;
       top: 0;
@@ -27,6 +27,7 @@
       background: url('../../../static/assets/images/background.jpg') no-repeat center center/cover;
       z-index: -1;
     }
+
     .form1 {
       background: #fff;
       padding: 30px;
@@ -38,26 +39,23 @@
       min-height: 90%;
       text-align: center;
       color: #2674e1;
-}
-    </style>
+    }
+  </style>
 </head>
+
 <body>
-  <!-- {% block content %} -->
-<div class="form1">
-  <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="40px" class="logo" style="position: relative; margin-bottom: 30px;">
-  <h2>Sign Up</h2>
-  <form method="post" >
-    <!-- {% csrf_token %} -->
-    <!-- {{ form.as_p }} -->
-    <button type="submit" style="background-color: #2674e1;">Sign Up</button>
-  </form>
-  <p>Already have an account? <a href="{% url 'login' %} " style="color: #1975f5;">Login</a></p>
-  
-</div>
+  <div class="form1">
+    <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
+      style="position: relative; margin-bottom: 30px;">
+    <h2>Sign Up</h2>
+    <form method="post">
+      <button type="submit" style="background-color: #2674e1;">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %} " style="color: #1975f5;">Login</a></p>
 
-<!-- {% endblock %} -->
-    
+  </div>
+
+
 </body>
+
 </html>
-
-

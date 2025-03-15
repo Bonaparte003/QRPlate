@@ -1,6 +1,6 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,6 +145,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -270,7 +271,7 @@
             background-color: var(--secondary-color);
             transform: scale(1.05);
         }
-    
+
 
         @keyframes progress {
             from {
@@ -304,6 +305,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Rest of the HTML content remains the same -->
     <header>
@@ -325,16 +327,17 @@
     <main>
         <div class="welcome-section">
             <h2>Welcome to the Admin Panel</h2>
-            <p class="welcome-message">Monitor student attendance and subscription metrics in real-time with our intuitive dashboard.</p>
+            <p class="welcome-message">Monitor student attendance and subscription metrics in real-time with our
+                intuitive dashboard.</p>
         </div>
 
         <div class="analytics">
             <div class="analytics-card">
                 <div class="circle-progress">
                     <svg viewBox="0 0 100 100">
-                        <circle class="circle-bg" cx="50" cy="50" r="45"/>
-                        <circle class="circle-progress-value" cx="50" cy="50" r="45" 
-                                style="stroke-dashoffset: calc(283 - (283 * 80) / 100);"/>
+                        <circle class="circle-bg" cx="50" cy="50" r="45" />
+                        <circle class="circle-progress-value" cx="50" cy="50" r="45"
+                            style="stroke-dashoffset: calc(283 - (283 * 80) / 100);" />
                     </svg>
                     <div class="percentage">80%</div>
                 </div>
@@ -343,9 +346,9 @@
             <div class="analytics-card">
                 <div class="circle-progress">
                     <svg viewBox="0 0 100 100">
-                        <circle class="circle-bg" cx="50" cy="50" r="45"/>
-                        <circle class="circle-progress-value" cx="50" cy="50" r="45" 
-                                style="stroke-dashoffset: calc(283 - (283 * 90) / 100);"/>
+                        <circle class="circle-bg" cx="50" cy="50" r="45" />
+                        <circle class="circle-progress-value" cx="50" cy="50" r="45"
+                            style="stroke-dashoffset: calc(283 - (283 * 90) / 100);" />
                     </svg>
                     <div class="percentage">90%</div>
                 </div>
@@ -354,9 +357,9 @@
             <div class="analytics-card">
                 <div class="circle-progress">
                     <svg viewBox="0 0 100 100">
-                        <circle class="circle-bg" cx="50" cy="50" r="45"/>
-                        <circle class="circle-progress-value" cx="50" cy="50" r="45" 
-                                style="stroke-dashoffset: calc(283 - (283 * 10) / 100);"/>
+                        <circle class="circle-bg" cx="50" cy="50" r="45" />
+                        <circle class="circle-progress-value" cx="50" cy="50" r="45"
+                            style="stroke-dashoffset: calc(283 - (283 * 10) / 100);" />
                     </svg>
                     <div class="percentage">10%</div>
                 </div>
@@ -365,9 +368,9 @@
             <div class="analytics-card">
                 <div class="circle-progress">
                     <svg viewBox="0 0 100 100">
-                        <circle class="circle-bg" cx="50" cy="50" r="45"/>
-                        <circle class="circle-progress-value" cx="50" cy="50" r="45" 
-                                style="stroke-dashoffset: calc(283 - (283 * 5) / 100);"/>
+                        <circle class="circle-bg" cx="50" cy="50" r="45" />
+                        <circle class="circle-progress-value" cx="50" cy="50" r="45"
+                            style="stroke-dashoffset: calc(283 - (283 * 5) / 100);" />
                     </svg>
                     <div class="percentage">5%</div>
                 </div>
@@ -380,18 +383,16 @@
             View Full Dashboard
         </a>
     </main>
-    <!-- {{ redirect_to_login_immediately }} -->
-
     <script>
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             body.setAttribute('data-theme', newTheme);
-            
+
             const themeIcon = document.querySelector('.theme-toggle i');
             themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            
+
             localStorage.setItem('theme', newTheme);
         }
 
@@ -403,4 +404,5 @@
         });
     </script>
 </body>
+
 </html>

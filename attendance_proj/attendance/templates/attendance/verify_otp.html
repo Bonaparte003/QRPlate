@@ -1,6 +1,6 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +8,24 @@
     <link rel="stylesheet" href="{% static 'assets/css/otp.css' %}">
     <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
 </head>
+
 <body>
 
     <!-- templates/attendance/verify_otp.html -->
-<div class="verify" style="margin: 5%;">
-    <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo">
+    <div class="verify" style="margin: 5%;">
+        <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo">
 
-    <form method="POST">
-        <!-- {% csrf_token %} -->
-        <label>Enter OTP:</label>
-        <input type="text" name="otp" required>
-        <center><button type="submit">Verify OTP</button></center>
-    </form>
+        <form method="POST">
+            <label>Enter OTP:</label>
+            <input type="text" name="otp" required>
+            <center><button type="submit">Verify OTP</button></center>
+        </form>
 
-            <p>xxxxx1</p>
+        <p>xxxxx1</p>
 
 
-</div>
-    
+    </div>
+
 </body>
-</html>
 
+</html>

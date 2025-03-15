@@ -1,4 +1,3 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,7 +24,8 @@
             display: flex;" onmouseover="
             this.style.background='#c2ecf6'" onmouseout="
             this.style.background='transparent'"></i>
-            <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="10px" class="logo" style="position: relative; margin-bottom: 10px; margin-top: 10px;">
+            <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="10px" class="logo"
+                style="position: relative; margin-bottom: 10px; margin-top: 10px;">
             <!-- <img src="../../../static/assets/images/alualu.png" alt="Logo" class="logo"> -->
             <a href="/logout"><button class="logout_button">LogOut</button></a>
         </div>
@@ -88,23 +88,23 @@
                         <div class="settings-grid">
                             <div class="settings-card">
                                 <h3>TOTAL REGISTERED</h3>
-                                <p id="totalStudents"><!-- {{ total_students }} --></p>
+                                <p id="totalStudents">xxxxxxx</p>
                             </div>
                             <div class="settings-card">
                                 <h3>TOTAL ATTENDED</h3>
-                                <p id="totalAttended"><!-- {{ total_attended }} --></p>
+                                <p id="totalAttended">xxxxxxxxxx</p>
                             </div>
                             <div class="settings-card">
                                 <h3>PAID ATTENDED</h3>
-                                <p id="PaidAttended"><!-- {{ paid_attended }} --></p>
+                                <p id="PaidAttended">xxxxxxxxxx</p>
                             </div>
                             <div class="settings-card">
                                 <h3>PAID ABSENT</h3>
-                                <p id="PaidAbsent"><!-- {{ paid_absent }} --></p>
+                                <p id="PaidAbsent">xxxxxx</p>
                             </div>
                             <div class="settings-card">
                                 <h3>UNPAID ATTENDED</h3>
-                                <p id="UnpaidAttended"><!-- {{ unpaid_attended }} --></p>
+                                <p id="UnpaidAttended">xxxxxxxxxxx</p>
                             </div>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                             </div>
                             <div class="settings-form">
                                 <form method="POST" action="{% url 'admin_dashboard' %}">
-                                    <!-- {% csrf_token %} -->
+                                    xxxxxxxxxxxxx
 
                                     <!-- Displaying and allowing editing of all fields -->
                                     <label for="student_id">Student ID:</label>
@@ -221,7 +221,8 @@
                                     <br>
 
                                     <label for="is_scholar">Scholar Status:</label>
-                                    <input type="checkbox" id="is_scholar" name="is_scholar" {% if form.is_scholar.value%}checked{% endif %}>
+                                    <input type="checkbox" id="is_scholar" name="is_scholar"
+                                        {% if form.is_scholar.value%}checked{% endif %}>
                                     <br>
 
                                     <button type="submit" class="submit-btn">Save Changes</button>
@@ -229,7 +230,7 @@
                             </div>
 
                             <div class="messages">
-                                <div class="alert {{ message.tags }}"><!-- {{ message }} --></div>
+                                <div class="alert {{ message.tags }}">xxxxxxxxx</div>
                             </div>
                         </div>
                     </div>
@@ -245,18 +246,18 @@
                             </div>
                             <div class="settings-form1">
                                 <form method="POST" action="{% url 'report_issue' %}" class="issue-form">
-                                    <!-- {% csrf_token %} -->
+                                    xxxxxxxxxx
                                     <div class="form-group1">
                                         <label for="id_title"></label>
-                                        <!-- {{ issue_form.title }} -->
+                                        xxxxxx
                                     </div>
                                     <div class="form-group2">
                                         <label for="id_description"></label>
-                                        <!-- {{ issue_form.description }} -->
+                                        xxxxxxxxxx
                                     </div>
                                     <div class="form-group3">
                                         <label for="id_priority">Priority</label>
-                                        <!-- {{ issue_form.priority }} -->
+                                        xxxxxxxxxxx
                                     </div>
                                     <button type="submit" class="submit-btn2">Submit Issue</button>
                                 </form>
@@ -264,7 +265,7 @@
                             </div>
                             <!-- Feedback Messages -->
                             <div class="messages">
-                                <div class="alert {{ message.tags }}"><!-- {{ message }} --></div>
+                                <div class="alert {{ message.tags }}">xxxxxxxxxxxxxxxxxxxx</div>
                             </div>
                         </div>
                     </div>
@@ -280,11 +281,8 @@
         </div>
     </section>
 
-    <!-- {{ redirect_to_login_immediately }} -->
 
     <script>
-
-
         document.addEventListener('DOMContentLoaded', function () {
             function toggleModal(modalId) {
                 const modal = document.getElementById(modalId);
@@ -404,7 +402,8 @@
 
                 // Add bottom shadow when not at bottom
                 if (scrollTop < maxScroll) {
-                    tableContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1)';
+                    tableContainer.style.boxShadow =
+                        '0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1)';
                 } else {
                     tableContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                 }
@@ -446,7 +445,10 @@
             function scrollToStudent(studentId) {
                 const row = document.querySelector(`tr[data-id="${studentId}"]`);
                 if (row) {
-                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    row.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                     // Add highlight effect
                     row.classList.add('highlight');
                     setTimeout(() => row.classList.remove('highlight'), 2000);
@@ -533,13 +535,15 @@
             console.log(`Sending date string: ${content}`); // Add this line for debugging
 
             fetch('/admin_dashboard/api/get-attendance-summary/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({ content: content })
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        content: content
+                    })
+                })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -598,16 +602,16 @@
 
                 // Send an AJAX request to update the payment status in the backend
                 fetch('api/toggle-payment-status/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'), // Ensure CSRF token is sent
-                    },
-                    body: JSON.stringify({
-                        id: student.id,
-                        paid: newStatus,
-                    }),
-                })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'), // Ensure CSRF token is sent
+                        },
+                        body: JSON.stringify({
+                            id: student.id,
+                            paid: newStatus,
+                        }),
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -628,8 +632,8 @@
         // Helper function to get the CSRF token
         function getCookie(name) {
             const cookieValue = document.cookie.split('; ')
-                .find(row => row.startsWith(name + '='))
-                ?.split('=')[1];
+                .find(row => row.startsWith(name + '=')) ?
+                .split('=')[1];
             return cookieValue;
         }
 
@@ -682,22 +686,27 @@
             renderTable(students);
             setActiveButton('button_all');
         }
+
         function showPresent() {
             renderTable(students.filter(student => student.present === 'Present'));
             setActiveButton('button_present');
         }
+
         function showAbsent() {
             renderTable(students.filter(student => student.present === 'Absent'));
             setActiveButton('button_absent');
         }
+
         function showPaid() {
             renderTable(students.filter(student => student.paid === 'Yes'));
             setActiveButton('button_paid');
         }
+
         function showPaidAbsent() {
             renderTable(students.filter(student => student.paid === 'Yes' && student.present === 'Absent'));
             setActiveButton('button_paid_absent');
         }
+
         function showUnpaidPresent() {
             renderTable(students.filter(student => student.paid === 'No' && student.present === 'Present'));
             setActiveButton('button_unpaid_present');
@@ -714,15 +723,16 @@
             }
 
             try {
-                const response = await fetch(`/admin_dashboard/search-students/?query=${encodeURIComponent(searchInput)}`);
+                const response = await fetch(
+                    `/admin_dashboard/search-students/?query=${encodeURIComponent(searchInput)}`);
 
                 if (response.ok) {
                     const data = await response.json();
 
                     // Populate results
-                    resultsContainer.innerHTML = data.results.length > 0
-                        ? data.results.map(student => `<p>${student.name} - ${student.phone}</p>`).join("")
-                        : "<p>No results found.</p>";
+                    resultsContainer.innerHTML = data.results.length > 0 ?
+                        data.results.map(student => `<p>${student.name} - ${student.phone}</p>`).join("") :
+                        "<p>No results found.</p>";
                 } else {
                     resultsContainer.innerHTML = "<p>Error fetching search results.</p>";
                 }
@@ -775,7 +785,6 @@
 
         // Render the table initially
         renderTable(students);
-
     </script>
 
 </body>

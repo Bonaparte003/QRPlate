@@ -1,4 +1,3 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -47,7 +46,7 @@
         <img src="{% static 'assets/images/alualu.png' %}" width="80px" height="30px" class="logo"
             style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
     </div>
-    <!-- {{ redirect_to_login_immediately }}  to redirect to login page immediately -->
+    <!-- to redirect to login page immediately -->
     <!-- Add jsQR library for QR scanning -->
     <script>
         const scanButton = document.getElementById('scan-qr-btn');
@@ -66,7 +65,11 @@
             scannerContainer.style.display = 'block';
 
             // Request access to the camera
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment'
+                    }
+                })
                 .then(function (stream) {
                     // Set the video element source to the camera stream
                     videoElement.srcObject = stream;
@@ -123,7 +126,8 @@
 
                         console.log('Extracted QR Code ID:', qrCodeId);
 
-                        const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+                        const uuidPattern =
+                            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
                         if (!uuidPattern.test(qrCodeId)) {
                             console.error('Invalid QR code format:', qrCodeId);
                             createStatusOverlay('error', 'Invalid QR code format');
@@ -144,35 +148,37 @@
         function attendStudent(qrCodeId) {
             const csrfToken = getCookie('csrftoken');
             console.log('CSRF Token:', csrfToken);
-            
+
             fetch(`/scan/${qrCodeId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                },
-                body: JSON.stringify({ qr_code_id: qrCodeId })
-            })
-            .then(response => {
-                console.log('API Response:', response);
-                return response.json();
-            })
-            .then(data => {
-                console.log('API Data:', data);
-                if (data.message) {
-                    let status = 'success';
-                    if (data.message.includes('already been marked')) {
-                        status = 'warning';
-                    } else if (data.message.includes('Invalid')) {
-                        status = 'error';
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        qr_code_id: qrCodeId
+                    })
+                })
+                .then(response => {
+                    console.log('API Response:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Data:', data);
+                    if (data.message) {
+                        let status = 'success';
+                        if (data.message.includes('already been marked')) {
+                            status = 'warning';
+                        } else if (data.message.includes('Invalid')) {
+                            status = 'error';
+                        }
+                        createStatusOverlay(status, data.message);
                     }
-                    createStatusOverlay(status, data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error attending student:', error);
-                createStatusOverlay('error', 'There was an error while marking attendance.');
-            });
+                })
+                .catch(error => {
+                    console.error('Error attending student:', error);
+                    createStatusOverlay('error', 'There was an error while marking attendance.');
+                });
         }
 
         // Overlay creation and management function
@@ -238,20 +244,28 @@
         // Helper function to get background color based on status
         function getBackgroundColor(status) {
             switch (status) {
-                case 'success': return '#4CAF50';   // Green
-                case 'warning': return '#FFC107';   // Yellow
-                case 'error': return '#FFFFFF';   // Red
-                default: return '#607D8B';   // Neutral Gray
+                case 'success':
+                    return '#4CAF50'; // Green
+                case 'warning':
+                    return '#FFC107'; // Yellow
+                case 'error':
+                    return '#FFFFFF'; // Red
+                default:
+                    return '#607D8B'; // Neutral Gray
             }
         }
 
         // Helper function to get icon based on status
         function getStatusIcon(status) {
             switch (status) {
-                case 'success': return '✅';  // Green checkmark
-                case 'warning': return '⚠️';  // Warning sign
-                case 'error': return '❌';  // Red cross
-                default: return 'ℹ️';  // Information icon
+                case 'success':
+                    return '✅'; // Green checkmark
+                case 'warning':
+                    return '⚠️'; // Warning sign
+                case 'error':
+                    return '❌'; // Red cross
+                default:
+                    return 'ℹ️'; // Information icon
             }
         }
 
