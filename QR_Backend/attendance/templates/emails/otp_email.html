@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech-volve OTP Verification</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background-color: #1975f5;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            margin: 0 auto;
+            color: white;
+        }
+        .logo img {
+            max-width: 100px;
+            height: 50px;
+        }
+        .content {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .otp-box {
+            background-color: #1456b3;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        .footer {
+            background-color: #2C3E50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .message {
+            color: #333333;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .note {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+        .validity {
+            color: #0e4491;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1 >QR PLATE</h1>
+            </div>
+        </div>
+        <div class="content">
+            <h2 style="color: #1456b3;">OTP Verification</h2>
+            <div class="message">
+                Hello,<br><br>
+                Your one-time password (OTP) for login is:
+            </div>
+            <div class="otp-box">
+                {{otp}}
+            </div>
+            <div class="validity">
+                This OTP will expire in 5 minutes
+            </div>
+            <div class="note">
+                For security reasons, please do not share this OTP with anyone.<br>
+                If you didn't request this OTP, please ignore this email.
+            </div>
+        </div>
+        <div class="footer">
+            <p>© 2025 <b>QR PLATE</b>. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
