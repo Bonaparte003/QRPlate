@@ -1,122 +1,370 @@
+import 'home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() {
-  runApp(const MyApp());
+const Color whitey = Colors.white;
+const Color blacky = Colors.black;
+const Color bluey = Color.fromARGB(255, 8, 81, 182);
+
+void main() async {
+  // Lock the orientation to portrait mode
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: bluey,
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: bluey),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: bluey,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: HomePageLayout(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class HomePageLayout extends StatefulWidget {
+  const HomePageLayout({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageLayoutState createState() => _HomePageLayoutState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageLayoutState extends State<HomePageLayout> {
+  bool isLogin = true;
+  bool isOtpVerification = false;
+  final storage = FlutterSecureStorage();
 
-  void _incrementCounter() {
+  void toggleView() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      isLogin = !isLogin;
     });
+  }
+
+  void showOtpVerification() {
+    setState(() {
+      isOtpVerification = true;
+    });
+  }
+
+  void showLogin() {
+    setState(() {
+      isOtpVerification = false;
+      isLogin = true;
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (isOtpVerification) {
+      showLogin();
+      return false;
+    }
+    if (!isLogin) {
+      toggleView();
+      return false;
+    }
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.65,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: isOtpVerification
+                      ? OtpVerification(showLogin: showLogin)
+                      : isLogin
+                          ? Login(toggleView: toggleView, showOtpVerification: showOtpVerification)
+                          : SignUp(toggleView: toggleView),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.65,
+              left: 0,
+              right: 0,
+              child: Image.asset('assets/cartoon.png'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class Login extends StatefulWidget {
+  final VoidCallback toggleView;
+  final VoidCallback showOtpVerification;
+
+  const Login({required this.toggleView, required this.showOtpVerification, Key? key}) : super(key: key);
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Image.asset('assets/alualu.png', height: 40),
+            Container(
+              width: constraints.maxWidth * 1,
+              color: Colors.white,
+            ),
+            Container(
+              width: constraints.maxWidth * 0.7,
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.email),
+                  hintText: 'Enter Student Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
+              },
+              child: Text('Login'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bluey,
+                foregroundColor: whitey,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            RichText(
+              text: TextSpan(
+                text: "Don't have an Account? ",
+                style: TextStyle(color: blacky),
+                children: [
+                  TextSpan(
+                    text: 'Sign Up',
+                    style: TextStyle(
+                      color: bluey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = widget.toggleView,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class OtpVerification extends StatefulWidget {
+  final VoidCallback showLogin;
+
+  const OtpVerification({required this.showLogin, Key? key}) : super(key: key);
+
+  @override
+  _OtpVerificationState createState() => _OtpVerificationState();
+}
+
+class _OtpVerificationState extends State<OtpVerification> {
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        widget.showLogin();
+        return false;
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Image.asset('assets/alualu.png', height: 40),
+              Container(
+                width: constraints.maxWidth * 1,
+                color: Colors.white,
+              ),
+              Container(
+                width: constraints.maxWidth * 0.7,
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Enter OTP',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class SignUp extends StatefulWidget {
+  final VoidCallback toggleView;
+
+  const SignUp({required this.toggleView, Key? key}) : super(key: key);
+
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/alualu.png', height: 40),
+              const SizedBox(height: 10),
+              Container(
+                width: constraints.maxWidth *
+                    1, // Set the width to 70% of the container's widt
+              ),
+              const SizedBox(height: 10),
+              Container(
+                  width: constraints.maxWidth * 0.7,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Student Email',
+                      labelStyle:
+                          TextStyle(fontSize: 14), // Make the label smaller
+                      border: UnderlineInputBorder(),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: bluey),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                    ),
+                  )),
+              Container(
+                width: constraints.maxWidth * 0.7,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'First Name',
+                    labelStyle:
+                        TextStyle(fontSize: 14), // Make the label smaller
+                    border: UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: bluey),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: constraints.maxWidth * 0.7,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
+                    labelStyle:
+                        TextStyle(fontSize: 14), // Make the label smaller
+                    border: UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: bluey),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: constraints.maxWidth * 0.7,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    labelStyle:
+                        TextStyle(fontSize: 14), // Make the label smaller
+                    border: UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: bluey),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: constraints.maxWidth * 0.7,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Student ID',
+                    labelStyle:
+                        TextStyle(fontSize: 14), // Make the label smaller
+                    border: UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: bluey),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 35),
+            ],
+          ),
+        );
+      },
     );
   }
 }
