@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan QR Code</title>
-    <link rel="stylesheet" href="{% static 'assets/css/scan_page.css' %}">
+    <link rel="stylesheet" href="./static/assets/css/scan_page.css">
     <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
 
-    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
     <style>
         body {
             display: flex;
@@ -38,12 +38,12 @@
     <div class="wrapper">
         <h1>Admin Dashboard</h1>
         <button id="scan-qr-btn">Attend a Student</button>
-        <a href="{% url 'admin_dashboard' %}"><button class="back-to-d">Back To Dashboard</button></a>
+        <a href="{% url 'admin_dashboard"><button class="back-to-d">Back To Dashboard</button></a>
         <div id="scanner-container" style="display:none;">
             <video id="qr-video"></video>
             <button id="stop-scanning-btn">Stop Scanning</button>
         </div>
-        <img src="{% static 'assets/images/alualu.png' %}" width="80px" height="30px" class="logo"
+        <img src="./static/assets/images/alualu.png" width="80px" height="30px" class="logo"
             style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
     </div>
     <!-- to redirect to login page immediately -->

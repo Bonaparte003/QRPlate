@@ -1,5 +1,5 @@
 <!-- 404 Page Not Found -->
-<link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+<link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
 <style>
     /* 404 Page Styles */
     .error-container {
@@ -210,11 +210,11 @@
 </style>
 
 <div class="error-container">
-    <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="100px" class="logo"
+    <img src="./static/assets/images/alualu.png" width="100px" height="100px" class="logo"
         style="position: absolute; display: block; top: 10px; left: 50%; transform: translateX(-50%);">
     <h1 class="error-code">404</h1>
     <h2 class="error-message">Page Not Found</h2>
     <p class="error-description">The page you're looking for doesn't exist or has been moved.</p>
-    <img src="{% static 'assets/images/404.svg' %}" alt="404 illustration" class="error-image">
-    <a href="{% url 'login' %}" class="back-btn">Back to Home</a>
+    <img src="./static/assets/images/404.svg" alt="404 illustration" class="error-image">
+    <a href="./login" class="back-btn">Back to Home</a>
 </div>

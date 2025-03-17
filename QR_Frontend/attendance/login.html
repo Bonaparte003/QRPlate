@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+    <link rel="stylesheet" href="./static/assets/css/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
-    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
     <style>
         .wrapper1 {
             position: relative;
@@ -28,7 +28,7 @@
 
 <body>
     <div class="wrapper1">
-        <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
+        <img src="./static/assets/images/alualu.png" width="100px" height="40px" class="logo"
             style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
         <div class="title">Login</div>
         <p style="margin-bottom: 30px;">xxxxxx</p>
@@ -43,7 +43,7 @@
             </div>
 
         </form>
-        <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+        <p>Don't have an account? <a href="./signup">Sign up here</a></p>
     </div>
 
 

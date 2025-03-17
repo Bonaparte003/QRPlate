@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <!-- <link rel="stylesheet" href="{% static 'assets/css/index.css' %}"> -->
+    <!-- <link rel="stylesheet" href="./static/assets/css/index.css"> -->
     <link rel="stylesheet" href="../../../static/assets/css/index.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
-    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
 </head>
 
 <body>
@@ -24,7 +24,7 @@
             display: flex;" onmouseover="
             this.style.background='#c2ecf6'" onmouseout="
             this.style.background='transparent'"></i>
-            <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="10px" class="logo"
+            <img src="./static//assets/images/alualu.png" width="100px" height="10px" class="logo"
                 style="position: relative; margin-bottom: 10px; margin-top: 10px;">
             <!-- <img src="../../../static/assets/images/alualu.png" alt="Logo" class="logo"> -->
             <a href="/logout"><button class="logout_button">LogOut</button></a>
@@ -35,7 +35,7 @@
         <div class="sidebar">
             <!-- <div class="sidebar-header">
             <div class="logo-container">
-                <img src="{% static 'assets/images/logo.jpg' %}" alt="Logo">
+                <img src="./static/assets/images/logo.jpg" alt="Logo">
             </div>
             <button class="theme-toggle" onclick="toggleTheme()">
                 <i class="fas fa-moon"></i>
@@ -53,8 +53,8 @@
                     </li>
 
                     <li class="nav-item shower3">
-                        <a href="{% url 'scan_page' %}" style="text-decoration: none;">
-                            <img src="{% static 'assets/images/scan.svg' %}" alt="" width="20px">
+                        <a href="{% url 'scan_page" style="text-decoration: none;">
+                            <img src="./static/assets/images/scan.svg" alt="" width="20px">
                         </a>
                         <p class="links-info">Scan</p>
                     </li>
@@ -193,7 +193,7 @@
                                 <h2>Update Your Profile</h2>
                             </div>
                             <div class="settings-form">
-                                <form method="POST" action="{% url 'admin_dashboard' %}">
+                                <form method="POST" action="{% url 'admin_dashboard">
                                     xxxxxxxxxxxxx
 
                                     <!-- Displaying and allowing editing of all fields -->
@@ -225,27 +225,27 @@
                                         {% if form.is_scholar.value%}checked{% endif %}>
                                     <br>
 
-                                    <button type="submit" class="submit-btn">Save Changes</button>
-                                </form>
-                            </div>
+                                    <button type=" submit" class="submit-btn">Save Changes</button>
+                            </form>
+            </div>
 
-                            <div class="messages">
-                                <div class="alert {{ message.tags }}">xxxxxxxxx</div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="messages">
+                <div class="alert {{ message.tags }}">xxxxxxxxx</div>
+            </div>
+        </div>
+        </div>
 
-                    <!-- Modal for Raising Issue -->
-                    <!-- Modal for Raising Issue -->
-                    <div id="raiseIssueModal" class="modal hidden">
-                        <div class="modal-content">
-                            <div class="setting-heading">
-                                <!-- <span class="close-btn" onclick="toggleModal('updateProfileModal')">&times;</span> -->
-                                <span class="close-btn" onclick="toggleModal('raiseIssueModal')">&times;</span>
-                                <h2>Raise an Issue</h2>
-                            </div>
-                            <div class="settings-form1">
-                                <form method="POST" action="{% url 'report_issue' %}" class="issue-form">
+        <!-- Modal for Raising Issue -->
+        <!-- Modal for Raising Issue -->
+        <div id="raiseIssueModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="setting-heading">
+                    <!-- <span class="close-btn" onclick="toggleModal('updateProfileModal')">&times;</span> -->
+                    <span class="close-btn" onclick="toggleModal('raiseIssueModal')">&times;</span>
+                    <h2>Raise an Issue</h2>
+                </div>
+                <div class="settings-form1">
+                    <form method="POST" action="{% url 'report_issue" class="issue-form">
                                     xxxxxxxxxx
                                     <div class="form-group1">
                                         <label for="id_title"></label>

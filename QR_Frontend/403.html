@@ -1,5 +1,5 @@
 <!-- 403 Forbidden/Login Required -->
-<link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+<link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
 <style>
     /* 403 Login Required Page Styles */
     .auth-container {
@@ -251,7 +251,7 @@
     <h1 class="auth-message">Login Required</h1>
     <p class="auth-description">Please log in to access this page.</p>
     <div class="auth-buttons">
-        <a href="{% url 'login' %}" class="auth-btn">Login</a>
-        <a href="{% url 'signup' %}" class="auth-btn register">Register</a>
+        <a href="./login" class="auth-btn">Login</a>
+        <a href="./signup" class="auth-btn register">Register</a>
     </div>
 </div>

@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIGNUP</title>
-  <link rel="stylesheet" href="{% static 'assets/css/signup.css' %}">
-  <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+  <link rel="stylesheet" href="./static/assets/css/signup.css">
+  <link rel="icon" type="image/png" href="./static/assets/images/logo_alu.png">
   <style>
     body {
       display: flex;
@@ -45,13 +45,13 @@
 
 <body>
   <div class="form1">
-    <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
+    <img src="./static//assets/images/alualu.png" width="100px" height="40px" class="logo"
       style="position: relative; margin-bottom: 30px;">
     <h2>Sign Up</h2>
     <form method="post">
       <button type="submit" style="background-color: #2674e1;">Sign Up</button>
     </form>
-    <p>Already have an account? <a href="{% url 'login' %} " style="color: #1975f5;">Login</a></p>
+    <p>Already have an account? <a href="./login" style="color: #1975f5;">Login</a></p>
 
   </div>
 
