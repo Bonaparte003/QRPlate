@@ -1,122 +1,219 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'home.dart';
 
-void main() {
-  runApp(const MyApp());
+const Color whitey = Colors.white;
+const Color blacky = Colors.black;
+const Color bluey = Color.fromARGB(255, 8, 81, 182);
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  final storage = FlutterSecureStorage();
+  String? accessToken = await storage.read(key: 'access');
+
+  runApp(MyApp(accessToken: accessToken));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? accessToken;
 
-  // This widget is the root of your application.
+  const MyApp({super.key, this.accessToken});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: bluey,
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: bluey),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: bluey,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: accessToken != null ? QRScannerApp() : const HomePageLayout(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class HomePageLayout extends StatefulWidget {
+  const HomePageLayout({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageLayoutState createState() => _HomePageLayoutState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageLayoutState extends State<HomePageLayout> {
+  bool isLogin = true;
+  final storage = FlutterSecureStorage();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+  String errorMessage = '';
 
-  void _incrementCounter() {
+  Future<void> _handleLogin() async {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      isLoading = true;
+      errorMessage = '';
     });
+
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    final body = jsonEncode(<String, String>{
+      'username': email,
+      'password': password,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://609d-105-179-6-194.ngrok-free.app/api/admin-login/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print('Login successful');
+        final responseData = jsonDecode(response.body);
+
+        final accessToken = responseData['access'];
+        final refreshToken = responseData['refresh'];
+
+        await storage.write(key: 'access', value: accessToken);
+        await storage.write(key: 'refresh', value: refreshToken);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => QRScannerApp()),
+        );
+        print('accessToken' + accessToken);
+        print('refreshToken' + refreshToken);
+      } else {
+        setState(() {
+          errorMessage = 'Invalid Login';
+        });
+        print('Failed to login');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'An error occurred';
+      });
+      print('Error: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return WillPopScope(
+      onWillPop: () async => true,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.65,
+                width: MediaQuery.of(context).size.width * 1,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image.asset('assets/alualu.png', height: 40),
+                      const SizedBox(height: 0),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.email),
+                                hintText: 'Enter Username',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 20),
+                              ),
+                            ),
+                            const SizedBox(height: 20), // Small space between fields
+                            TextField(
+                              controller: passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.lock),
+                                hintText: 'Enter Password',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 20),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (errorMessage.isNotEmpty)
+                        Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      isLoading
+                          ? CircularProgressIndicator()
+                          : ElevatedButton(
+                              onPressed: _handleLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: bluey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 30),
+                              ),
+                              child: const Text('Login',
+                                  style: TextStyle(color: whitey)),
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.65,
+              left: 0,
+              right: 0,
+              child: Image.asset('assets/cartoon.png'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
