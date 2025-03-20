@@ -1,8 +1,10 @@
-import 'home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'home.dart';
 
 const Color whitey = Colors.white;
 const Color blacky = Colors.black;
@@ -11,13 +13,29 @@ const Color bluey = Color.fromARGB(255, 8, 81, 182);
 void main() async {
   // Lock the orientation to portrait mode
   WidgetsFlutterBinding.ensureInitialized();
+  
+  final storage = FlutterSecureStorage();
+  String? accessToken;
+  
+  try {
+    // Try to read the access token
+    accessToken = await storage.read(key: 'access');
+  } catch (e) {
+    // If there's an error, delete all data and reinitialize
+    await storage.deleteAll();
+    print('Secure storage reset due to error: $e');
+  }
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  runApp(MyApp());
+  runApp(MyApp(accessToken: accessToken));
 }
 
 class MyApp extends StatelessWidget {
+  final String? accessToken;
+
+  const MyApp({super.key, this.accessToken});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +53,7 @@ class MyApp extends StatelessWidget {
           color: bluey,
         ),
       ),
-      home: HomePageLayout(),
+      home: accessToken != null ? Home() : const HomePageLayout(),
     );
   }
 }
@@ -135,6 +153,42 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController emailController = TextEditingController();
+  final storage = FlutterSecureStorage();
+  bool isLoading = false;
+
+  Future<void> login() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await http.post(
+      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/login/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': emailController.text,
+      }),
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final sessionId = responseData['sessionId']; // Adjust key based on API response
+
+      await storage.write(key: 'email', value: emailController.text);
+      await storage.write(key: 'sessionId', value: sessionId);
+
+      print('Login successful: $responseData');
+      widget.showOtpVerification();
+    } else {
+      print('Login failed: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +205,7 @@ class _LoginState extends State<Login> {
             Container(
               width: constraints.maxWidth * 0.7,
               child: TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
                   hintText: 'Enter Student Email',
@@ -162,23 +217,20 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
-              },
-              child: Text('Login'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: bluey,
-                foregroundColor: whitey,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
+            isLoading
+                ? CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: bluey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 30),
+                    ),
+                    child: const Text('Login', style: TextStyle(color: whitey)),
+                  ),
             RichText(
               text: TextSpan(
                 text: "Don't have an Account? ",
@@ -213,6 +265,62 @@ class OtpVerification extends StatefulWidget {
 }
 
 class _OtpVerificationState extends State<OtpVerification> {
+  final List<TextEditingController> otpControllers = List.generate(6, (index) => TextEditingController());
+  final storage = FlutterSecureStorage();
+  bool isLoading = false;
+
+  void handleOtpInput(String value) {
+    if (value.length > 6) {
+      value = value.substring(0, 6);
+    }
+
+    for (int i = 0; i < value.length; i++) {
+      otpControllers[i].text = value[i];
+    }
+  }
+
+  Future<void> verifyOtp() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final otp = otpControllers.map((controller) => controller.text).join();
+    final email = await storage.read(key: 'email');
+    final response = await http.post(
+      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/verify-otp/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': 'sessionid=${await storage.read(key: "sessionId")}',
+      },
+      body: jsonEncode(<String, String>{
+        'otp': otp,
+        'email': email ?? '',
+      }),
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      print('Verification successful');
+      final responseBody = jsonDecode(response.body);
+      var tokens = responseBody['tokens'];
+      var user = responseBody['user'];
+      if (tokens != null) {
+        await storage.write(key: 'access', value: tokens['access']);
+        await storage.write(key: 'refresh', value: tokens['refresh']);
+      }
+      print(await storage.read(key: 'access'));
+      print(await storage.read(key: 'refresh'));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Home()),
+      );
+    } else {
+      print('Failed to verify');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +342,7 @@ class _OtpVerificationState extends State<OtpVerification> {
               Container(
                 width: constraints.maxWidth * 0.7,
                 child: TextField(
+                  onChanged: handleOtpInput,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Enter OTP',
@@ -244,6 +353,20 @@ class _OtpVerificationState extends State<OtpVerification> {
                   ),
                 ),
               ),
+              isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: verifyOtp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: bluey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 30),
+                      ),
+                      child: const Text('Verify', style: TextStyle(color: whitey)),
+                    ),
             ],
           );
         },
@@ -262,6 +385,44 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController studentIdController = TextEditingController();
+  final storage = FlutterSecureStorage();
+  bool isLoading = false;
+
+  Future<void> signUp() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await http.post(
+      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/signup/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': emailController.text,
+        'first_name': firstNameController.text,
+        'last_name': lastNameController.text,
+        'phone': phoneNumberController.text,
+        'student_id': studentIdController.text,
+      }),
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.statusCode == 201) {
+      print('Signup successful: ${response.body}');
+      widget.toggleView();
+    } else {
+      print('Signup failed: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -281,6 +442,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                   width: constraints.maxWidth * 0.7,
                   child: TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       labelText: 'Student Email',
                       labelStyle:
@@ -296,6 +458,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                 width: constraints.maxWidth * 0.7,
                 child: TextField(
+                  controller: firstNameController,
                   decoration: InputDecoration(
                     labelText: 'First Name',
                     labelStyle:
@@ -313,6 +476,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                 width: constraints.maxWidth * 0.7,
                 child: TextField(
+                  controller: lastNameController,
                   decoration: InputDecoration(
                     labelText: 'Last Name',
                     labelStyle:
@@ -330,6 +494,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                 width: constraints.maxWidth * 0.7,
                 child: TextField(
+                  controller: phoneNumberController,
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     labelStyle:
@@ -347,6 +512,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                 width: constraints.maxWidth * 0.7,
                 child: TextField(
+                  controller: studentIdController,
                   decoration: InputDecoration(
                     labelText: 'Student ID',
                     labelStyle:
@@ -361,6 +527,21 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const SizedBox(height: 35),
+              isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: signUp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: bluey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 30),
+                      ),
+                      child: const Text('Sign Up', style: TextStyle(color: whitey)),
+                    ),
+              const SizedBox(height: 50),
             ],
           ),
         );
