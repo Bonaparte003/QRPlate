@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Issue Reported</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background-color: #1975f5;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            margin: 0 auto;
+            color: white;
+        }
+        .content {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .issue-details {
+            background-color: #0b3775;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: left;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #2C3E50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .message {
+            color: #333333;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .note {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1>QR PLATE</h1>
+            </div>
+        </div>
+        <div class="content">
+            <h2 style="color: #0e3e81;">New Issue Reported</h2>
+            <div class="message">
+                Dear Admin,<br><br>
+                A new issue has been reported by <strong>{{ user.get_full_name }}</strong> (<a href="mailto:{{ user.email }}">{{ user.email }}</a>).
+            </div>
+            <div class="issue-details">
+                <p><strong>Issue Title:</strong> {{ issue.title }}</p>
+                <p><strong>Description:</strong> {{ issue.description }}</p>
+                <p><strong>Priority:</strong> {{ issue.priority }}</p>
+                <p><strong>Reported On:</strong> {{ issue.created_at }}</p>
+            </div>
+            <div class="note">
+                Please address this issue at your earliest convenience.<br>
+                Thank you for your prompt attention.
+            </div>
+        </div>
+        <div class="footer">
+            <p>© 2025 <b>QR PLATE</b>. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
