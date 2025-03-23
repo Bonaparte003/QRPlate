@@ -1,0 +1,84 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    color: #333;
+}
+
+/* Verify OTP Form Container */
+.verify {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.verify form {
+    width: 100%;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.verify label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.verify input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.verify input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+}
+
+.verify button {
+    display: block;
+    width: 100%;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.verify button:hover {
+    background: #45A049;
+}
+
+/* Message Styling */
+.verify p {
+    font-size: 14px;
+    color: #cc0000;
+    margin-top: 10px;
+    background: #ffe6e6;
+    border: 1px solid #ffcccc;
+    padding: 10px;
+    border-radius: 5px;
+}
