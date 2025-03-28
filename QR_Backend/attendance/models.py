@@ -13,9 +13,10 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=30, default="Birenzi")
     is_scholar = models.BooleanField(default=False)
     qr_code_id = models.UUIDField(default=uuid.uuid4, editable=False)
-    image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
+    # image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
     paid = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
