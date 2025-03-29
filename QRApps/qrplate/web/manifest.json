@@ -1,6 +1,6 @@
 {
-    "name": "qrplate",
-    "short_name": "qrplate",
+    "name": "QR_Plate",
+    "short_name": "QR_Plate",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

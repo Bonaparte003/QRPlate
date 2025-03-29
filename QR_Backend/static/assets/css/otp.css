@@ -1,0 +1,108 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1975f5, #63a4ff);
+    color: #333;
+}
+
+body::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images/background.jpg') no-repeat center center/cover;
+    z-index: -1;
+}
+
+/* Verify OTP Form Container */
+.verify {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.verify form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.verify label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.verify input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.verify input:focus {
+    border-color: #297aea;
+    border: 2px solid #297aea;
+    padding: 12px;
+}
+
+.verify button {
+    width: 40%;
+    font-size: 14px;
+    background: #1a5cb8;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    padding: 12px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.verify button:hover {
+    border-radius: 20px;
+}
+
+.verify button:active {
+    background: #297aea;
+}
+
+/* Message Styling */
+.verify p {
+    font-size: 14px;
+    color: #07cc00;
+    margin-top: 10px;
+    background: #e7ffe6;
+    border: 1px solid #cdffcc;
+    padding: 10px;
+    border-radius: 5px;
+}

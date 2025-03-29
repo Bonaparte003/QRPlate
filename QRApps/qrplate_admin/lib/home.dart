@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'main.dart';
 
 const Color whitey = Colors.white;
 const Color bluey = Color.fromARGB(255, 8, 81, 182);
@@ -18,7 +19,7 @@ Future<void> refreshAccessToken() async {
   String? refreshToken = await storage.read(key: 'refresh');
 
   final response = await http.post(
-    Uri.parse('https://609d-105-179-6-194.ngrok-free.app/token/refresh/'),
+    Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/token/refresh/'),
     body: {
       'refresh': refreshToken,
     },
@@ -145,7 +146,7 @@ class _QRScannerHomePageState extends State<QRScannerHomePage> with SingleTicker
     if (!_isScanning) return;
 
     setState(() => _isScanning = false);
-    final url = Uri.parse('https://609d-105-179-6-194.ngrok-free.app/api/scan/$qrCodeId/');
+    final url = Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/scan/$qrCodeId/');
     
     try {
       final accessToken = await getAccessToken();
@@ -191,6 +192,17 @@ class _QRScannerHomePageState extends State<QRScannerHomePage> with SingleTicker
     }
   }
 
+  Future<void> _logout() async {
+    await storage.deleteAll();
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MyApp()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,6 +213,16 @@ class _QRScannerHomePageState extends State<QRScannerHomePage> with SingleTicker
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: bluey,
+              size: 30,
+            ),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Stack(
         children: [

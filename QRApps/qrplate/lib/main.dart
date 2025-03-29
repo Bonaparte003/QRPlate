@@ -163,7 +163,7 @@ class _LoginState extends State<Login> {
     });
 
     final response = await http.post(
-      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/login/'),
+      Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/login/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -287,7 +287,7 @@ class _OtpVerificationState extends State<OtpVerification> {
     final otp = otpControllers.map((controller) => controller.text).join();
     final email = await storage.read(key: 'email');
     final response = await http.post(
-      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/verify-otp/'),
+      Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/verify-otp/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Cookie': 'sessionid=${await storage.read(key: "sessionId")}',
@@ -399,7 +399,7 @@ class _SignUpState extends State<SignUp> {
     });
 
     final response = await http.post(
-      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/signup/'),
+      Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/signup/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

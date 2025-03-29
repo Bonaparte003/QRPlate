@@ -2,24 +2,22 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGNUP</title>
-  <link rel="stylesheet" href="{% static 'assets/css/signup.css' %}">
-  <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
-  <style>
-    body {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGNUP</title>
+    <link rel="stylesheet" href="{% static 'assets/css/signup.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <style>
+  body {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: linear-gradient(135deg, #1975f5, #63a4ff);
       color: #333;
-    }
-
-    body::before {
+  }
+  body::before{
       content: '';
       position: absolute;
       top: 0;
@@ -29,7 +27,6 @@
       background: url('../../../static/assets/images/background.jpg') no-repeat center center/cover;
       z-index: -1;
     }
-
     .form1 {
       background: #fff;
       padding: 30px;
@@ -41,27 +38,142 @@
       min-height: 90%;
       text-align: center;
       color: #2674e1;
+}
+    .Apps {
+        position: absolute;
+        top: 20px;
+        right: 20px;
     }
-  </style>
-</head>
 
+    .app_download {
+        background-color: white;
+        color: #1975f5;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: 1px solid #1975f5;
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .form1 {
+            width: 90%;
+            padding: 20px;
+            margin: 20px;
+        }
+        
+        .Apps {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          font-size: 10px; 
+        }
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: #2674e1;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    form {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+
+    form p {
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    form input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    form input:focus {
+        border-color: #2674e1;
+        box-shadow: 0 0 5px rgba(38, 116, 225, 0.2);
+        outline: none;
+    }
+
+    form button {
+        width: 100%;
+        padding: 12px;
+        background-color: #2674e1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    form button:hover {
+        background-color: #1a5ab0;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 20px;
+            margin-bottom: 2.5rem;
+        }
+        form p{
+          font-size: 10px;
+        }
+
+        form input {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        form button {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        .logo{
+                width: 80px;
+                height: 32px;
+            }
+        .Apps {
+            margin: 10px 0;
+            font-size: 10px;
+        }
+        .form1{
+          width: 350px;
+          height: auto;
+          min-height: 420px;
+        }
+    }
+    </style>
+</head>
 <body>
   {% block content %}
-  <div class="form1">
-    <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
-      style="position: relative; margin-bottom: 30px;">
-    <h2>Sign Up</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" style="background-color: #2674e1;">Sign Up</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %} " style="color: #1975f5;">Login</a></p>
+<div class="Apps">
+    <a href="{% url 'download_apps' %}" class="app_download">Use App</a>
+</div>
+<div class="form1">
+  <img src="{% static '/assets/images/alualu.png' %}" width="100px" height="40px" class="logo" style="position: relative; margin-bottom: 30px;">
+  <h2>Sign Up</h2>
+  <form method="post" >
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="background-color: #2674e1;">Sign Up</button>
+  </form>
+  <p>Already have an account? <a href="{% url 'login' %} " style="color: #1975f5;">Login</a></p>
+  
+</div>
 
-  </div>
-
-  {% endblock %}
-
+{% endblock %}
+    
 </body>
-
 </html>
+
+

@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Apps</title>
+    <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1975f5, #63a4ff);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .download-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .download-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            background-color: #1975f5;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background-color: #1557b0;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .download-container {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .logo {
+                width: 120px;
+            }
+
+            .download-btn {
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <img src="{% static 'assets/images/alualu.png' %}" alt="ALU Logo" class="logo">
+        <h2 style="color: #1975f5; margin-bottom: 1rem;">Download Our Apps</h2>
+        <div class="download-buttons">
+            <a href="{% static 'Apps/admin_app.apk' %}" class="download-btn" download>Admin App Download</a>
+            <a href="{% static 'Apps/student_app.apk' %}" class="download-btn" download>Student App Download</a>
+        </div>
+    </div>
+</body>
+</html> 

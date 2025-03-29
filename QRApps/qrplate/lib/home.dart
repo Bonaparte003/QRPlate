@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
       }
 
       final response = await http.get(
-        Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/home-api/'),
+        Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/home-api/'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
           firstName = data['user_profile']['first_name'];
           lastName = data['user_profile']['last_name'];
           profilePictureUrl = data['profile_picture_url'] != null 
-              ? 'https://9865-196-12-151-106.ngrok-free.app${data['profile_picture_url']}'
+              ? 'https://e6d5-105-179-8-146.ngrok-free.app${data['profile_picture_url']}'
               : null;
         });
 
@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
     String? refreshToken = await storage.read(key: 'refresh');
 
     final response = await http.post(
-      Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/token/refresh/'),
+      Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/token/refresh/'),
       body: {
         'refresh': refreshToken,
       },
@@ -137,7 +137,7 @@ class _HomeState extends State<Home> {
         // Create multipart request
         var request = http.MultipartRequest(
           'POST',
-          Uri.parse('https://9865-196-12-151-106.ngrok-free.app/api/update-profile-picture/'),
+          Uri.parse('https://e6d5-105-179-8-146.ngrok-free.app/api/update-profile-picture/'),
         );
 
         // Add authorization header
@@ -257,7 +257,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Positioned(
-                  top: screenHeight * 0.35,
+                  top: screenHeight * 0.32,
                   left: screenWidth * 0.1,
                   right: screenWidth * 0.1,
                   child: GestureDetector(
@@ -269,7 +269,7 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: bluey, // Changed from whitey to bluey for blue border
+                              color: const Color.fromARGB(255, 255, 255, 255), // Changed from whitey to bluey for blue border
                               width: 4.0, // Slightly thicker border
                             ),
                           ),

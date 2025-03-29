@@ -75,12 +75,34 @@ def handler400(request, exception):
 # Set OTP expiration time (e.g., 5 minutes)
 OTP_EXPIRATION_TIME = datetime.timedelta(minutes=5)
 
-
-
 @login_required
-@staff_member_required
-def admin_landing(request):
-    return render(request, "attendance/home_admin.html")
+def update_profile(request):
+    if request.method == 'POST':
+        form = UpdateProfileForm(request.POST)
+        if form.is_valid():
+            # Get the logged-in user profile
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user  # Ensure user is linked to the profile
+            
+            user_profile.save()
+
+            # If email is updated, ensure the linked User model is updated too
+            if 'email' in form.cleaned_data:
+                request.user.email = form.cleaned_data['email']
+                request.user.save()
+
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('profile')  # Redirect to the profile page or dashboard
+        else:
+            messages.error(request, "There was an error updating your profile. Please try again.")
+    
+    else:
+        # Prepopulate the form with the current user's profile
+        form = UpdateProfileForm(instance=request.user.userprofile)
+    
+    return render(request, 'attendance/index_admin.html', {'form': form})
+
+
 
 
 @login_required
@@ -88,13 +110,43 @@ def admin_landing(request):
 def scan_page(request):
     return render(request, "attendance/scan_page.html")
 
+@login_required
+def report_issue(request):
+    if request.method == 'POST':
+        form = IssueForm(request.POST)
+        if form.is_valid():
+            issue = form.save(commit=False)
+            issue.reported_by = request.user  # Set the logged-in user as the reporter
+            issue.save()
+            
+            # Sending email to the admin
+            message = render_to_string('emails/issue_reported.html', {
+                'user': request.user,
+                'issue': issue,
+            })
+
+            send_mail(
+                subject=f"New Issue Reported: {issue.title}",
+                message="This is an HTML email, please view it in a compatible client.",  # Fallback plain text
+                html_message=message,  # Rendered HTML message
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=["b.uteramaho@alustudent.com"],  
+                fail_silently=False,
+            )
+
+            messages.success(request, "Your issue has been reported successfully.")
+            return redirect('admin_dashboard')  # Redirect back to the dashboard
+        else:
+            messages.error(request, "There was an error reporting the issue. Please try again.")
+
+    return redirect('admin_dashboard')  # Redirect if accessed via GET
 
 
 @login_required
 @staff_member_required
 def admin_dashboard(request):
     students_data = []
-    students = UserProfile.objects.all()
+    students = UserProfile.objects.filter(user__is_staff=False)
     
     # Collecting student data for attendance & payment status
     for student in students:
@@ -169,16 +221,34 @@ def attendance_summary(request):
             
             attendance_records = Attendance.objects.filter(date=date)
             
-            totalStudents = UserProfile.objects.count()
+            totalStudents = UserProfile.objects.filter(user__is_staff=False).count()
             totalAttended = attendance_records.count()
-            PaidAttended = attendance_records.filter(user_profile__paid=True).count()
-            PaidAbsent = totalStudents - PaidAttended
-            UnpaidAttended = attendance_records.filter(user_profile__paid=False).count()
+            
+            # Count scholars who attended
+            ScholarAttended = attendance_records.filter(user_profile__is_scholar=True).count()
+            
+            # Count paid non-scholar students who attended
+            PaidNonScholarAttended = attendance_records.filter(user_profile__paid=True, user_profile__is_scholar=False).count()
+            
+            # Total of paid students who attended (scholars + paid non-scholars)
+            total_Paid_attended = ScholarAttended + PaidNonScholarAttended
+            
+            # Count unpaid students who attended (non-scholars who haven't paid)
+            UnpaidAttended = attendance_records.filter(user_profile__paid=False, user_profile__is_scholar=False).count()
+            
+            # Calculate total number of paid students (scholars + paid non-scholars)
+            total_paid_students = UserProfile.objects.filter(
+                Q(is_scholar=True) | Q(paid=True, is_scholar=False),
+                user__is_staff=False
+            ).count()
+            
+            # Calculate paid students who are absent
+            PaidAbsent = total_paid_students - total_Paid_attended
         
             summary = {
                 'totalStudents': totalStudents,
                 'totalAttended': totalAttended,
-                'PaidAttended': PaidAttended,
+                'PaidAttended': total_Paid_attended,
                 'PaidAbsent': PaidAbsent,
                 'UnpaidAttended': UnpaidAttended,
             }
@@ -243,17 +313,32 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user_profile, password = form.save()
-            # Send email with the generated password
-            send_mail(
-                'Your Account Password',
-                f'Your account has been created. Your password is: {password}',
-                settings.EMAIL_HOST_USER,  # Replace with your sender email
-                [user_profile.email],
-                fail_silently=False,
-            )
-            messages.success(request, 'Signup successful! Please check your email for your password.')
-            return redirect('login')
+            try:
+                user_profile, password = form.save(commit=False)
+                user_profile.is_scholar = 0
+
+                # Ensure student_id is unique
+                base_student_id = user_profile.student_id
+                student_id = base_student_id
+                max_retries = 5
+                
+                for _ in range(max_retries):
+                    if not UserProfile.objects.filter(student_id=student_id).exists():
+                        break
+                    unique_suffix = uuid.uuid4().hex[:6]  # Generate a random 6-character suffix
+                    student_id = f"{base_student_id}_{unique_suffix}"
+                else:
+                    messages.error(request, 'Failed to generate a unique student ID. Please try again.')
+                    return redirect('signup')
+
+                user_profile.student_id = student_id
+                user_profile.save()
+                
+                messages.success(request, 'Signup successful! Please login to continue.')
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, f'An error occurred during signup: {str(e)}')
+                return redirect('signup')
     else:
         form = SignupForm()
 
@@ -411,6 +496,10 @@ def login_view(request):
 
     return render(request, 'attendance/login.html', {'form': form})
 
+# View to download the app
+def download_app(request):
+    return render(request, 'attendance/download_apps.html')
+
 # Decorate with @login_required to ensure the user is authenticated
 @csrf_exempt
 def verify_otp(request):
@@ -447,10 +536,329 @@ def logout_view(request):
     logout(request)  # Log out the user
     return redirect('login')  # Redirect to login page after logout
 
+@api_view(['GET'])
+def home(request):
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        try:
+            # Extract the token from the Authorization header
+            token_str = auth_header.split(' ')[1]
+            token = AccessToken(token_str)
+            
+            # Authenticate the user using the token
+            jwt_auth = JWTAuthentication()
+            validated_token = jwt_auth.get_validated_token(token_str)
+            user = jwt_auth.get_user(validated_token)
+            
+            user_profile = UserProfile.objects.get(user=user)
+
+            # Generate the QR code URL using settings.BASE_URL
+            qr_code_url = f"{settings.BASE_URL}/scan/{user_profile.qr_code_id}"
+
+            # Generate the QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=8,
+                border=4,
+            )
+            qr.add_data(qr_code_url)
+            qr.make(fit=True)
+            print(qr_code_url)
+
+            img = qr.make_image(fill_color='black', back_color='white')
+
+            img_io = BytesIO()
+            img.save(img_io, format='PNG')
+            img_io.seek(0)
+
+            qr_code_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+            print(user_profile.first_name)
+            print(user_profile.last_name)
+
+            return JsonResponse({
+                'qr_code': qr_code_base64,
+                'user_profile': {
+                    'email': user_profile.email,
+                    'student_id': user_profile.student_id,
+                    'first_name': user_profile.first_name,
+                    'last_name': user_profile.last_name,
+                },
+                'qr_code_url': qr_code_url,
+                'profile_picture_url': user_profile.profile_picture.url if user_profile.profile_picture else None
+            }, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Authorization header missing'}, status=401)
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+@login_required
+@csrf_exempt
+@api_view(['POST'])
+def scan_qr_code(request, qr_code_id):
+    try:
+        logger.info(f"Received QR code ID: {qr_code_id}")
+
+        if isinstance(qr_code_id, str):
+            qr_code_id = UUID(qr_code_id)
+            logger.info(f"Converted QR code ID to UUID: {qr_code_id}")
+
+        user_profile = UserProfile.objects.get(qr_code_id=qr_code_id)
+        user = user_profile.user
+        logger.info(f"Found user profile for QR code ID: {qr_code_id}, user: {user.username}")
+
+        today = timezone.now().date()
+        if Attendance.objects.filter(user_profile=user_profile, date=today).exists():
+            logger.info(f"Attendance for {user.username} has already been marked today.")
+            return JsonResponse({
+                'message': f"Attendance for {user.username} has already been marked today.",
+            })
+
+        Attendance.objects.create(
+            user_profile=user_profile,
+            date=today,
+            time=timezone.now().time()
+        )
+        logger.info(f"Attendance successfully recorded for {user.username}")
+
+        return JsonResponse({
+            'message': f"Attendance successfully recorded for {user.username}.",
+            'attendance_time': timezone.now().strftime("%H:%M:%S"),
+        })
+
+    except UserProfile.DoesNotExist:
+        logger.error(f"UserProfile with QR code ID {qr_code_id} does not exist.")
+        return JsonResponse({'message': 'Invalid QR code ID'}, status=400)
+    except ValueError:
+        logger.error(f"Invalid QR code ID format: {qr_code_id}")
+        return JsonResponse({'message': 'Invalid QR code ID format'}, status=400)
+    except Exception as e:
+        logger.error(f"Error processing the QR code: {str(e)}")
+        return JsonResponse({'message': f'Error processing the QR code: {str(e)}'}, status=500)
+
+    
+
 # Generate OTP
 def generate_otp():
     return str(random.randint(100000, 999999))
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_otp_api(request):
+    serializer = LoginSerializer(data=request.data) 
+    session_id = request.data.get('sessionId')
+    if serializer.is_valid():
+        email = serializer.validated_data['email']
+        try:
+            # Validate the session ID
+            session = Session.objects.get(session_key=session_id)
+            session_data = session.get_decoded()
+
+            # Ensure the session matches the correct user
+            email = session_data.get('email')
+            if not email:
+                return Response({'message': 'Invalid session or session has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_profile = UserProfile.objects.get(email=email)
+            otp = generate_otp()
+
+            request.session['otp'] = otp
+            request.session['otp_timestamp'] = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Get base64 encoded logo
+            logo_path = os.path.join(settings.STATIC_ROOT, 'assets/images/logo.jpg')
+            try:
+                with open(logo_path, 'rb') as img_file:
+                    logo_data = base64.b64encode(img_file.read()).decode()
+                    logo_url = f"data:image/jpeg;base64,{logo_data}"
+            except Exception as e:
+                print(f"Error reading logo: {e}")
+                logo_url = ""  # Fallback if image can't be read
+
+            # Render HTML email template
+            html_content = render_to_string('emails/otp_email.html', {
+                'otp': otp,
+                'logo_url': logo_url
+            })
+            
+            text_content = strip_tags(html_content)
+
+            # Send email using EmailMessage to support HTML content
+            email_message = EmailMessage(
+                'Your OTP for Login - QR Plate',
+                html_content,
+                settings.EMAIL_HOST_USER,
+                [email]
+            )
+            
+            email_message.content_subtype = 'html'
+            email_message.send()
+
+            return Response({'message': 'OTP sent to your email.', 'sessionId': session_id}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'message': 'No account found with that email.'}, status=status.HTTP_404_NOT_FOUND)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def verify_otp_api(request):
+    sessionId = request.COOKIES.get('sessionid')
+    #otp_input = request.data.get('otp')
+    #email = request.data.get('email') or request.session.get('email')
+    #stored_otp = request.session.get('otp')
+    #otp_timestamp = request.session.get('otp_timestamp')
+
+    print("Session Data at Verification:")
+    print(sessionId)
+    #print("Email:", email)
+    #print("Stored OTP:", stored_otp)
+    #print("Stored OTP Timestamp:", otp_timestamp)
+    print("-"*10) 
+    #print(f"All Session Data: {dict(request.session)}")
+
+    
+
+    try:
+        # Retrieve the session and decode its data
+        session = Session.objects.get(session_key=sessionId)
+        session_data = session.get_decoded() 
+        print("Session Data at Verification:")
+        print(session_data)
+
+        # Validate session data
+        stored_otp = session_data.get('otp')
+        otp_timestamp = session_data.get('otp_timestamp')
+        email = session_data.get('email')
+        otp_input = request.data.get('otp') 
+        
+        # Convert otp_timestamp to a timezone-aware datetime
+        otp_time = timezone.make_aware(
+            timezone.datetime.strptime(otp_timestamp, "%Y-%m-%d %H:%M:%S"),
+            timezone=timezone.get_current_timezone()
+        )
+
+        if not email or not stored_otp or not otp_timestamp:
+            return Response(
+            {"message": "OTP session has expired. Please request a new OTP."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+        print("Current Time (timezone.now()):", timezone.now())
+        print("OTP Time:", otp_time)
+        print("Time Difference (seconds):", (timezone.now() - otp_time).total_seconds())
+
+        # Check if OTP has expired
+        if timezone.now() - otp_time > OTP_EXPIRATION_TIME:
+            return Response(
+                {"message": "OTP has expired. Please request a new OTP."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the entered OTP matches the stored OTP
+        if otp_input == stored_otp:
+            # Fetch the user from the profile
+            user_profile = UserProfile.objects.get(email=email)
+            user = user_profile.user
+
+            # Log the user in
+            login(request, user)
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            print(access_token)
+
+            # Clear OTP and email from the session
+            request.session.pop('otp', None)
+            request.session.pop('email', None)
+            request.session.pop('otp_timestamp', None)
+
+            return Response(
+                {
+                    "message": "Login successful.",
+                    "user": {
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name
+                    },
+                    "tokens": {
+                        "access": access_token,
+                        "refresh": refresh_token
+                    }
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"message": "Invalid OTP. Please try again."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    except UserProfile.DoesNotExist:
+        return Response(
+            {"message": "No account found with that email."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def signup_api(request):
+    try:
+        form = SignupForm(request.data)
+        if form.is_valid():
+            user_profile, password = form.save(commit=False)
+            user_profile.is_scholar = 0
+
+            # Ensure student_id is unique
+            base_student_id = user_profile.student_id
+            student_id = base_student_id
+            max_retries = 5
+            for _ in range(max_retries):
+                if not UserProfile.objects.filter(student_id=student_id).exists():
+                    break
+                unique_suffix = uuid.uuid4().hex[:6]  # Generate a random 6-character suffix
+                student_id = f"{base_student_id}_{unique_suffix}"
+            else:
+                logger.error("Failed to generate a unique student_id after multiple attempts.")
+                return Response({'message': 'Failed to generate a unique student_id. Please try again.'}, status=500)
+
+            user_profile.student_id = student_id
+            user_profile.save()
+
+            return Response({
+                'message': 'User created successfully.',
+                'user': {
+                    'email': user_profile.user.email,
+                    'username': user_profile.user.username,
+                    'first_name': user_profile.user.first_name,
+                    'last_name': user_profile.user.last_name,
+                    'student_id': user_profile.student_id,  # Access student_id from user_profile
+                }
+            }, status=201)
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+            return Response({'message': 'Form is not valid', 'errors': form.errors}, status=400)
+    except Exception as e:
+        logger.error(f"Error during signup: {str(e)}", exc_info=True)
+        return Response({'message': str(e)}, status=500)
+    
+# API for logout
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_api(request):
     logout(request)
     return Response({'message': 'Logout successful.'}, status=status.HTTP_200_OK)
 
@@ -469,3 +877,292 @@ class LoginAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# filepath: /path/to/views.py
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def home_api(request):
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        
+        # Generate the QR code URL
+        qr_code_url = f"{settings.BASE_URL}/scan/{user_profile.qr_code_id}"
+        
+        # Generate the QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=8,
+            border=4,
+        )
+        qr.add_data(qr_code_url)
+        qr.make(fit=True)
+        
+        # Create QR code image
+        img = qr.make_image(fill_color='black', back_color='white')
+        
+        # Convert QR code to base64
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        
+        return Response({
+            'qr_code': qr_code_base64,
+            'qr_code_url': qr_code_url,
+            'user_profile': {
+                'email': user_profile.email,
+                'student_id': user_profile.student_id,
+                'profile_picture_url': request.build_absolute_uri(user_profile.profile_picture.url) if user_profile.profile_picture else None
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except UserProfile.DoesNotExist:
+        return Response({
+            'error': 'User profile not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def scan_qr_code_api(request, qr_code_id):
+    try:
+        logger.info(f"Received QR code ID: {qr_code_id}")
+        # Ensure qr_code_id is a valid UUID
+        qr_code = str(qr_code_id)
+        qr_code_id2 = UUID(qr_code)
+
+        # Fetch the UserProfile associated with the QR code
+        user_profile = UserProfile.objects.get(qr_code_id=qr_code_id2)
+        user = user_profile.user
+
+        # Check if attendance for today is already marked
+        today = timezone.now().date()
+        if Attendance.objects.filter(user_profile=user_profile, date=today).exists():
+            return Response({'message': 'Attendance already marked today.'}, status=status.HTTP_200_OK)
+
+        # Mark attendance
+        Attendance.objects.create(
+            user_profile=user_profile,
+            date=today,
+            time=timezone.now().time()
+        )
+
+        return Response({
+            'message': f'Attendance successfully recorded for {user.username}.',
+            'attendance_time': timezone.now().strftime("%H:%M:%S"),
+        }, status=status.HTTP_201_CREATED)
+
+    except UserProfile.DoesNotExist:
+        logger.error(f"UserProfile does not exist for QR code ID: {qr_code_id2}")
+        return Response({'error': 'Invalid QR code ID.'}, status=status.HTTP_400_BAD_REQUEST)
+    except ValueError:
+        logger.error(f"Invalid QR code format: {qr_code_id2}")
+        return Response({'error': 'Invalid QR code format.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+def mark_attendance_api(request):
+    serializer = AttendanceSerializer(data=request.data)
+    if serializer.is_valid():
+        qr_code_id = serializer.validated_data['qr_code_id']
+        try:
+            user_profile = UserProfile.objects.get(qr_code_id=qr_code_id)
+            
+            # Check if attendance already marked for today
+            today = timezone.now().date()
+            if Attendance.objects.filter(user_profile=user_profile, date=today).exists():
+                return Response({'message': 'Attendance already marked for today.'}, status=status.HTTP_200_OK)
+
+            # Mark attendance
+            Attendance.objects.create(user_profile=user_profile, date=today, time=timezone.now().time())
+            return Response({'message': 'Attendance marked successfully.'}, status=status.HTTP_201_CREATED)
+        
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Invalid QR code ID.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def login_api(request):
+    try:
+        # Step 1: Validate the email form
+        form = LoginForm(request.data)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            # Step 2: Check if the user exists
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                return Response({
+                    'message': 'User not found',
+                }, status=404)
+
+            # Step 3: Generate OTP
+            otp = generate_otp()
+
+            # Step 4: Send OTP to user's email
+            send_otp(email, otp)
+
+            # Store the OTP and email in the session 
+            session_id = request.session.session_key
+            if not session_id:
+                request.session.create()  # Create a new session if none exists
+                session_id = request.session.session_key
+
+            request.session['otp'] = otp
+            request.session['email'] = email
+            request.session['otp_timestamp'] = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Debugging session data
+            print("Session Data After Login:")
+            print("Email:", request.session.get('email'))
+            print("Stored OTP:", request.session.get('otp'))
+            print("Stored OTP Timestamp:", request.session.get('otp_timestamp'))
+
+            return Response({
+                'message': 'OTP sent to your email.',
+                'sessionId': session_id,
+            }, status=200)
+
+        else:
+            return Response({
+                'message': 'Form is not valid',
+                'errors': form.errors
+            }, status=400)
+
+    except Exception as e:
+        return Response({
+            'message': str(e)
+        }, status=500)
+
+
+
+
+@api_view(['POST'])
+def admin_login(request):
+    try:
+        username = request.data.get('username')
+        password = request.data.get('password')
+        print(username)
+        print(password)
+
+        if not username or not password:
+            return Response({'message': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.is_staff:
+            return Response({'message': 'User is not authorized'}, status=status.HTTP_403_FORBIDDEN)
+
+        if check_password(password, user.password):
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'message': 'Login successful',
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_dashboard_api(request):
+    try:
+        # Get the user profile for the logged-in user
+        user_profile = UserProfile.objects.get(user=request.user)
+        
+        # Get the attendance records for the student
+        attendance_records = user_profile.attendance_set.all()  # Assuming there's an Attendance model
+        
+        # Prepare the data to send back to the student
+        data = []
+        for record in attendance_records:
+            data.append({
+                'date': record.date,
+                'status': record.status  # Assuming Attendance model has status (e.g., 'present' or 'absent')
+            })
+        
+        return Response({'attendance_records': data}, status=status.HTTP_200_OK)
+
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'User profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_dashboard_api(request):
+    try:
+        # Get all user profiles (students)
+        user_profiles = UserProfile.objects.all()
+        
+        # Prepare the data to send back to the admin
+        data = []
+        for profile in user_profiles:
+            data.append({
+                'email': profile.email,
+                'student_id': profile.student_id,
+                'attendance_count': profile.attendance_set.count()  # Assuming there's an Attendance model
+            })
+        
+        return Response({'user_profiles': data}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_profile_picture(request):
+    try:
+        print("Files in request:", request.FILES)  # Debug print
+        user_profile = UserProfile.objects.get(user=request.user)
+        
+        if 'profile_picture' in request.FILES:
+            file = request.FILES['profile_picture']
+            print(f"Received file: {file.name}, size: {file.size}")  # Debug print
+            
+            if user_profile.profile_picture:
+                print(f"Deleting old profile picture: {user_profile.profile_picture.path}")  # Debug print
+                user_profile.profile_picture.delete(save=False)
+            
+            user_profile.profile_picture = file
+            user_profile.save()
+            
+            print(f"New profile picture saved at: {user_profile.profile_picture.path}")  # Debug print
+            print(f"URL: {user_profile.profile_picture.url}")  # Debug print
+            
+            return Response({
+                'message': 'Profile picture updated successfully',
+                'profile_picture_url': request.build_absolute_uri(user_profile.profile_picture.url)
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'No profile picture provided'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        print(f"Error updating profile picture: {str(e)}")  # Add logging
+        return Response({
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

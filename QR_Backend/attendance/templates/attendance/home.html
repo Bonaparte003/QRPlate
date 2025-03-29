@@ -60,7 +60,10 @@
 
         h2 {
             color: white;
-            font-size: 50px;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -84,19 +87,109 @@
             background-color: darkred;
             border-radius: 15px;
         }
+
+        .Apps {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        .app_download {
+            background-color: white;
+            color: #1975f5;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #1975f5;
+            text-decoration: none;
+        }
+        .app_download:hover{
+            background-color: white;
+            color: #1975f5;
+            border-radius: 15px;
+        }
+
+        img {
+            max-width: 300px;
+            height: auto;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .button {
+            padding: 12px 30px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .info{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            img {
+                max-width: 250px;
+                margin: 1.5rem 0;
+            }
+
+            .button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .container h3{
+                font-size: 1rem;
+            }
+
+            img {
+                max-width: 90%;
+                height: auto;
+            }
+
+            .Apps {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                margin: 10px 0;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="Apps">
+        <a href="{% url 'download_apps' %}" class="app_download">Use App</a>
+    </div>
     <div class="container">
-        <h2>Welcome, {{ user.username }}!</h2>
         <!-- <p>Your unique QR code for attendance:</p> -->
-        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+        <div class="info">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <h3>{{ user.first_name }} {{ user.last_name }} {{ user.last_name }}</h3>
+        </div>
 
         <!-- <p>Scan this QR code to mark your attendance.</p> -->
         <a class="button" href="{% url 'logout' %}">Logout</a>
 
-        <!-- <p>Your QR code URL: <a href="{{ qr_code_url }}" target="_blank">{{ qr_code_url }}</a></p> -->
+        <p>Your QR code URL: <a href="{{ qr_code_url }}" target="_blank">{{ qr_code_url }}</a></p>
     </div>
 </body>
 
