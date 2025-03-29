@@ -74,7 +74,7 @@ Admin Dashboard
 
 ### Summary:
 
-User friendly summary/overview of attendance tracking of students who attended and who didn’t for fast and eased tracking
+User friendly summary/overview of attendance tracking of students who attended and who didn't for fast and eased tracking
 
 ### Payment Validation & Detailed Information on Attendance
 
@@ -262,3 +262,79 @@ flutter run
 - Default admin credentials should be changed after first login
 - Configure environment variables if necessary
 
+## DEMO
+
+### Web Application
+
+#### Authentication
+![Login Page](./images/login_page_web.png)
+*Login page for web application*
+
+#### Admin Dashboard
+![Admin Home](./images/home_admin_web.png)
+*Admin dashboard home page*
+
+##### Student Management
+![Students List](./images/students_list.png)
+*View and manage students*
+
+![Change Payment Status](./images/changing_of_payment_status.png)
+*Update student payment status*
+
+##### Attendance Management
+![Date Selection](./images/changing_date_for_better_search.png)
+*Filter attendance by date*
+
+![QR Scanning Page](./images/attendance_qr_scanning_page.png)
+*Scan QR codes for attendance*
+
+##### Permissions & Reports
+![Permission Request](./images/permission_requesting_web.png)
+*Camera permission request*
+
+![Report Download](./images/report_downloading.png)
+*Download attendance reports*
+
+![Email Report](./images/report_email_sample.png)
+*Sample of email report*
+
+#### Student Portal
+![Student QR Home](./images/student_web_qr_code_home.png)
+*Student dashboard with QR code*
+
+### Mobile Applications
+
+#### Student App
+![App Start](./images/starting_app_logo_display.png)
+*App splash screen*
+
+![Student Login](./images/student_login_page_mobile_app.png)
+*Student mobile login*
+
+![Loading Data](./images/data_loading_student_app.png)
+*Loading student information*
+
+![Student Home](./images/student_app_home_data_loaded.png)
+*Student home screen*
+
+![QR Code Display](./images/student_app_qr_code_home_showing.png)
+*Student QR code display*
+
+![Profile Picture Upload](./images/upload_of_picture_home_student_app.png)
+*Upload profile picture*
+
+#### Admin App
+![Admin Login](./images/admin_app_login_page.png)
+*Admin mobile login*
+
+![Admin Home](./images/admin_home_page_app.png)
+*Admin mobile dashboard*
+
+![Camera Permission](./images/permission_request_for_usage_of_camera_admin_app.png)
+*Camera permission request*
+
+![QR Scanning](./images/phone_scanning.png)
+*Scanning student QR codes*
+
+![Scan Result](./images/phone_qr_code_admin_app_result_example.png)
+*QR scan result*

@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,27 @@
 
     <link rel="icon" type="image/png" href="{% static 'assets/images/logo_alu.png' %}">
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1975f5, #63a4ff);
+            color: #333;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "assets/images/background.jpg" %}') no-repeat center center/cover;
+            z-index: -1;
+        }
+
         .wrapper1 {
             position: relative;
             display: flex;
@@ -23,19 +45,33 @@
             border-bottom-left-radius: 20px;
             box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         }
-        .Apps{
+
+        .login_space {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .Apps {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             margin-top: 20px;
-        }   
-        .app_download{
+        }
+
+        .app_download {
             background-color: white;
             color: #1975f5;
             padding: 10px 20px;
             border-radius: 5px;
             border: 1px solid #1975f5;
         }
+
         @media (max-width: 768px) {
             .wrapper1 {
                 padding: 10px 20px;
@@ -43,69 +79,79 @@
                 height: auto;
                 min-height: 450px;
 
-                
+
             }
-            .logo{
+
+            .logo {
                 width: 80px;
                 height: 32px;
             }
-            
+
             .Apps {
                 margin: 10px 0;
                 font-size: 10px;
             }
-            .title{
+
+            .title {
                 font-size: 20px;
             }
-            .email{
+
+            .email {
                 width: 100%;
             }
-            
+
             input {
                 width: 100%;
             }
-            .row button{
+
+            .row button {
                 font-size: 10px;
             }
-            p{
+
+            p {
                 font-size: 12px;
             }
         }
-        .app_download{
+
+        .app_download {
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        .app_download:hover{
+
+        .app_download:hover {
             border-radius: 20px;
         }
     </style>
 </head>
+
 <body>
     <div class="Apps">
         <a href="{% url 'download_apps' %}" class="app_download">Use App</a>
     </div>
     <div class="login_space">
         <div class="wrapper1">
-            <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo" style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
+            <img src="{% static 'assets/images/alualu.png' %}" width="100px" height="40px" class="logo"
+                style="position: absolute; display: block; top: 20px; left: 50%; transform: translateX(-50%);">
             <div class="title">Login</div>
             {% if messages %}
             {% for message in messages %}
-                <p style="margin-bottom: 30px;">{{ message }}</p>
+            <p style="margin-bottom: 30px;">{{ message }}</p>
             {% endfor %}
-           {% endif %}
-    
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
                 <div class="row">
                     <label>Email:</label>
                     <input type="email" name="email" required class="email"> <br>
                     <div class="row button"><button type="submit">Send OTP</button></div>
-                    
+
                 </div>
-    
+
             </form>
             <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
         </div>
     </div>
 </body>
+
 </html>

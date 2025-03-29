@@ -187,9 +187,12 @@
         </div>
 
         <!-- <p>Scan this QR code to mark your attendance.</p> -->
-        <a class="button" href="{% url 'logout' %}">Logout</a>
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="button">Logout</button>
+        </form>
 
-        <p>Your QR code URL: <a href="{{ qr_code_url }}" target="_blank">{{ qr_code_url }}</a></p>
+        <!-- <p>Your QR code URL: <a href="{{ qr_code_url }}" target="_blank">{{ qr_code_url }}</a></p> -->
     </div>
 </body>
 

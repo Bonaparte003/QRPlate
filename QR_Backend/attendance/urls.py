@@ -11,6 +11,7 @@ web_patterns = [
     path('home/', views.web_home, name='web_home'),
     path('logout/', views.logout_view, name='logout'),
     path('scan/<uuid:qr_code_id>/', views.scan_qr_code, name='scan_qr_code'),
+    path('scan/<uuid:qr_code_id>/', views.scan_qr_code, name='scan_qr_code'),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('send-otp/', views.send_otp, name='send_otp'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),

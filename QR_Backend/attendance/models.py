@@ -14,8 +14,10 @@ class UserProfile(models.Model):
     is_scholar = models.BooleanField(default=False)
     qr_code_id = models.UUIDField(default=uuid.uuid4, editable=False)
     # image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
+    # image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
     paid = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
 
     def __str__(self):

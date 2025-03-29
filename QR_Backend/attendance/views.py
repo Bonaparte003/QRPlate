@@ -496,10 +496,6 @@ def login_view(request):
 
     return render(request, 'attendance/login.html', {'form': form})
 
-# View to download the app
-def download_app(request):
-    return render(request, 'attendance/download_apps.html')
-
 # Decorate with @login_required to ensure the user is authenticated
 @csrf_exempt
 def verify_otp(request):
@@ -1166,3 +1162,8 @@ def update_profile_picture(request):
         return Response({
             'message': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# downloading apps
+def download_app(request):
+    return render(request, 'attendance/download_apps.html')
+
