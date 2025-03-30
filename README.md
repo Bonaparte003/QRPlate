@@ -305,36 +305,64 @@ flutter run
 ### Mobile Applications
 
 #### Student App
-![App Start](./images/starting_app_logo_display.png)
-*App splash screen*
-
-![Student Login](./images/student_login_page_mobile_app.png)
-*Student mobile login*
-
-![Loading Data](./images/data_loading_student_app.png)
-*Loading student information*
-
-![Student Home](./images/student_app_home_data_loaded.png)
-*Student home screen*
-
-![QR Code Display](./images/student_app_qr_code_home_showing.png)
-*Student QR code display*
-
-![Profile Picture Upload](./images/upload_of_picture_home_student_app.png)
-*Upload profile picture*
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="./images/starting_app_logo_display.png" width="250px"/><br/>
+      <em>App splash screen</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/student_login_page_mobile_app.png" width="250px"/><br/>
+      <em>Student mobile login</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/data_loading_student_app.png" width="250px"/><br/>
+      <em>Loading student information</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="./images/student_app_home_data_loaded.png" width="250px"/><br/>
+      <em>Student home screen</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/student_app_qr_code_home_showing.png" width="250px"/><br/>
+      <em>Student QR code display</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/upload_of_picture_home_student_app.png" width="250px"/><br/>
+      <em>Upload profile picture</em>
+    </td>
+  </tr>
+</table>
 
 #### Admin App
-![Admin Login](./images/admin_app_login_page.png)
-*Admin mobile login*
-
-![Admin Home](./images/admin_home_page_app.png)
-*Admin mobile dashboard*
-
-![Camera Permission](./images/permission_request_for_usage_of_camera_admin_app.png)
-*Camera permission request*
-
-![QR Scanning](./images/phone_scanning.png)
-*Scanning student QR codes*
-
-![Scan Result](./images/phone_qr_code_admin_app_result_example.png)
-*QR scan result*
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="./images/admin_app_login_page.png" width="250px"/><br/>
+      <em>Admin mobile login</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/admin_home_page_app.png" width="250px"/><br/>
+      <em>Admin mobile dashboard</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/permission_request_for_usage_of_camera_admin_app.png" width="250px"/><br/>
+      <em>Camera permission request</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="./images/phone_scanning.png" width="250px"/><br/>
+      <em>Scanning student QR codes</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="./images/phone_qr_code_admin_app_result_example.png" width="250px"/><br/>
+      <em>QR scan result</em>
+    </td>
+    <td align="center" width="33%">
+      <!-- Empty cell for alignment -->
+    </td>
+  </tr>
+</table>
