@@ -554,3 +554,5 @@ All endpoints may return the following error responses:
    - Optimization techniques
    - Caching strategies
    - Resource management 
+
+[https://docs.google.com/document/d/1-JA0EaHyZnQ8oQb1siFZirfgNGAZt0Xduht4k2GzTng/edit?usp=sharing](Click here to view more)
