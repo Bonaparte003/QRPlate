@@ -459,12 +459,8 @@ All endpoints may return the following error responses:
    - Mobile app development
    - Integration testing
 
-3. **Testing Phase**
-   - Unit testing
-   - Integration testing
-   - User acceptance testing
 
-4. **Deployment Phase**
+3. **Deployment Phase**
    - Production deployment
    - User training
    - System monitoring
